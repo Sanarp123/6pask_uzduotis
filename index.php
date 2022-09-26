@@ -25,64 +25,41 @@
         <?php } ?>
         <!-- if jeigu sausainis egzistuoja - forma paslepta, jei ne - forma matoma -->
         <form method="post" action="index.php">
-            <input id="pris_form" class="form-control" name="vardas" type="text" placeholder="Vardas">
-            <input id="pris_form" class="form-control" type="password" name="slaptazodis" placeholder="Slaptazodis">
-            <button id="pris_form" class="btn btn-primary" type="submit" name="prisijungti">Prisijungti</button>
+            <input class="form-control" name="vardas" type="text" placeholder="Vardas">
+            <input class="form-control" type="password" name="slaptazodis" placeholder="Slaptazodis">
+            <button class="btn btn-primary" type="submit" name="prisijungti">Prisijungti</button>
         </form>    
 
     </div>
    
 
     <?php 
-    //tikriname, ar jungiamasi 3 karta 
-    $i = $_COOKIE["skaitiklis"];
-    if(isset($_COOKIE["skaitiklis"]) && ($i>=3) )
-    {
-        echo '<style>.form-control { display:none;}</style>';
-        echo "Palaukite 60 sekundziu";
-    }
+                if(isset($_COOKIE["banas"])) {
+                    echo '<style>.form-control, .btn-primary { display:none;}</style>';
+                    echo 'Jums 60s banas';
+                }
 
     //tikriname ar mygtukas paspaustas
     if(isset($_POST["prisijungti"])) {
-        setcookie("skaitiklis", 0,time()+3*3600);
         $vardas = $_POST["vardas"];
         $slaptazodis = $_POST["slaptazodis"];
-
+        if(!isset($_COOKIE["skaitiklis"])) {
+            setcookie("skaitiklis",1,time()+3*3600);
+        } 
         // geras vardas ir geras slaptazods
         $gVardas = "admin";
         $gSlaptazodis = "123";
-    
+        // 1 - admin
+        // 2 - vartotojas
+        // 3 - moderatorius
+        // 4 - klientas
+
         if($vardas == $gVardas && $slaptazodis == $gSlaptazodis) {
             $_SESSION["arPrisijunges"] = 1;
             $_SESSION["vardas"] = $vardas;
-            setcookie("skaitiklis", 0,time()+3*3600);
             header("Location: manopaskyra.php");
-        } else {
-
-    //SKAITIKLIS
-        //         if(!isset($_COOKIE["skaitiklis"])) {
-        //         $i = $_COOKIE["skaitiklis"];
-        //         }
-        //             if ($i>3){
-
-        //             }
-
-        // $i = 0;
-        //     $i = $_COOKIE["skaitiklis"];
-        //     $i++;
-
-        //     if(!isset($_COOKIE["skaitiklis"])) {
-        //         setcookie("skaitiklis", 0,time()+3*3600);
-        //         $i = 0;
-        //     } else {
-        //         $i = $_COOKIE["skaitiklis"];
-        //         $i++;
-        //         setcookie("skaitiklis", $i,time()+3*3600);
-        // echo $i;
-
-        //     }
-    //SKAITIKLIS
-    
+        } 
+        else {
             //zinute turi buti raudona
             //ir kitoks tekstas
             //Sesijos skaitiklis
@@ -91,12 +68,19 @@
             //susikurti sausainiukas kuris galiotu 60sec
             $_SESSION["zinute"] = "Neteisingi prisijungimo duomenys";
             $_SESSION["zinutes_stilius"] = "alert-danger";
+            $i = $_COOKIE["skaitiklis"];
+            if ($i==2) {
+                setcookie("banas", 0,time()+60);
+                $i = -1;      
+            };
             $i++;
-            setcookie("skaitiklis", $i,time()+60);
-            header("Location: 404.php");
+            setcookie("skaitiklis",$i,time()+3*3600);
+            header("Location: index.php");
+            
         }
-
     }
+
+    
     
     ?>
 
