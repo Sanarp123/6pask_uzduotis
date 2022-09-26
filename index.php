@@ -34,17 +34,25 @@
    
 
     <?php 
+                    //tikriname ar nera bano
                 if(isset($_COOKIE["banas"])) {
                     echo '<style>.form-control, .btn-primary { display:none;}</style>';
                     echo 'Jums 60s banas';
+                };
+                    //tikriname ar useris prisijunges
+                if (isset ($_SESSION["arPrisijunges"])){
+                    echo '<style>.form-control, .btn-primary { display:none;}</style>';
+                    echo 'Jus jau prisijunges';
                 }
+                
 
     //tikriname ar mygtukas paspaustas
     if(isset($_POST["prisijungti"])) {
         $vardas = $_POST["vardas"];
         $slaptazodis = $_POST["slaptazodis"];
+            //Jei nera, sukuriame skaitikli
         if(!isset($_COOKIE["skaitiklis"])) {
-            setcookie("skaitiklis",1,time()+3*3600);
+            setcookie("skaitiklis",1,time()+3600);
         } 
         // geras vardas ir geras slaptazods
         $gVardas = "admin";
@@ -68,15 +76,18 @@
             //susikurti sausainiukas kuris galiotu 60sec
             $_SESSION["zinute"] = "Neteisingi prisijungimo duomenys";
             $_SESSION["zinutes_stilius"] = "alert-danger";
+            //Nuskaitome skaitiklio verte
             $i = $_COOKIE["skaitiklis"];
+            //Jei jungiamasi po 3 karto, neberodo meniu 60s ir restartina skaitikli
             if ($i==2) {
                 setcookie("banas", 0,time()+60);
                 $i = -1;      
             };
+            //Skaiciuojami neteisingi prisijungimai
             $i++;
-            setcookie("skaitiklis",$i,time()+3*3600);
+            setcookie("skaitiklis",$i,time()+3600);
             header("Location: index.php");
-            
+         
         }
     }
 
